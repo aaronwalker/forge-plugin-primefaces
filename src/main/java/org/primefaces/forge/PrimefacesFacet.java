@@ -23,6 +23,7 @@ import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
 /**
  * 
  * @author rvkuijk
+ * @author bleathem
  */
 @Alias("org.primefaces")
 @RequiresFacet({ DependencyFacet.class, ServletFacet.class, WebResourceFacet.class })

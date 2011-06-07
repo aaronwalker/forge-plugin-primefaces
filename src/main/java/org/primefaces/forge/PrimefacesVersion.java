@@ -11,6 +11,7 @@ import org.jboss.forge.project.dependencies.ScopeType;
 /**
  * 
  * @author bleathem
+ * @author rvkuijk
  */
 public enum PrimefacesVersion
 {
