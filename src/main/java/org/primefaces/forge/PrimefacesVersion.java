@@ -15,22 +15,27 @@ import org.jboss.forge.project.dependencies.ScopeType;
  */
 public enum PrimefacesVersion
 {
-
+    PRIMEFACES_2_2_1("Primefaces 2.2.1",
+            Arrays.asList(
+           		 DependencyBuilder.create("org.primefaces:primefaces:2.2.1")
+           		 ),
+            Collections.EMPTY_LIST
+   ),
    PRIMEFACES_3_0_M1("Primefaces 3.0.M1",
             Arrays.asList(
                      DependencyBuilder.create("org.primefaces:primefaces:3.0.M1")
+                     ),
+                     Collections.EMPTY_LIST
+    ),
+    PRIMEFACES_3_0_M2_SNAPSHOT("Primefaces 3.0.M2 Snapshot",
+            Arrays.asList(
+                     DependencyBuilder.create("org.primefaces:primefaces:3.0.M2-SNAPSHOT")
                      ),
 //            Arrays.asList(
 //                     DependencyBuilder.create("org.primefaces:primefaces:3.0M1").setScopeType(ScopeType.IMPORT)
 //                              .setPackagingType("pom")
 //                     )
                      Collections.EMPTY_LIST
-    ),
-    PRIMEFACES_2_2_1("Primefaces 2.2.1",
-             Arrays.asList(
-            		 DependencyBuilder.create("org.primefaces:primefaces:2.2.1")
-            		 ),
-             Collections.EMPTY_LIST
     );
 
    private List<? extends Dependency> dependencies;
