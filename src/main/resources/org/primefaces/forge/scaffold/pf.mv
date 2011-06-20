@@ -1,0 +1,8 @@
+@declare{'inputSelector'}
+	@if{type=='String'} <p:inputText value="#{@{entityName}.@{field.name}}"/>
+	@else{type=='int'} <p:spinner value="#{@{entityName}.@{field.name}}"/>
+	@else{type=='Date'} <p:calendar value="#{@{entityName}.@{field.name}}"/>
+	@else{type=='Boolean'} <p:selectBooleanCheckbox value="#{@{entityName}.@{field.name}}"/>
+	@else{}<p:input value="#{@{entityName}.@{field.name}}" type="@{type}/>
+	@end{}
+@end{}
