@@ -96,24 +96,24 @@ public class PrimefacesFacet extends BaseFacet
          descriptor.facesServlet();
       }
 
-//      if (PrimefacesVersion.RICHFACES_3_3_3.equals(version))
-//      {
-//         List<ServletDef> servlets = descriptor.getServlets();
-//         String facesServletName = "FacesServlet";
-//         for (ServletDef servletDef : servlets)
-//         {
-//            if (FacesServlet.class.getName().equals(servletDef.getServletClass()))
-//            {
-//               facesServletName = servletDef.getName();
-//            }
-//         }
-//         FilterDef filter = descriptor.filter("org.ajax4jsf.Filter")
-//                  .mapping().servletName(facesServletName)
-//                  .dispatchTypes(DispatcherType.REQUEST,
-//                           DispatcherType.FORWARD,
-//                           DispatcherType.INCLUDE,
-//                           DispatcherType.ERROR);
-//      }
+      // if (PrimefacesVersion.RICHFACES_3_3_3.equals(version))
+      // {
+      // List<ServletDef> servlets = descriptor.getServlets();
+      // String facesServletName = "FacesServlet";
+      // for (ServletDef servletDef : servlets)
+      // {
+      // if (FacesServlet.class.getName().equals(servletDef.getServletClass()))
+      // {
+      // facesServletName = servletDef.getName();
+      // }
+      // }
+      // FilterDef filter = descriptor.filter("org.ajax4jsf.Filter")
+      // .mapping().servletName(facesServletName)
+      // .dispatchTypes(DispatcherType.REQUEST,
+      // DispatcherType.FORWARD,
+      // DispatcherType.INCLUDE,
+      // DispatcherType.ERROR);
+      // }
 
       descriptor.sessionTimeout(30);
       // TODO:
@@ -156,7 +156,7 @@ public class PrimefacesFacet extends BaseFacet
     */
    private void installDependencies(PrimefacesVersion version)
    {
-      //installDependencyManagement(version);
+      // installDependencyManagement(version);
 
       DependencyFacet deps = project.getFacet(DependencyFacet.class);
       for (Dependency dependency : version.getDependencies())
@@ -165,7 +165,7 @@ public class PrimefacesFacet extends BaseFacet
       }
 
       deps.addRepository("Prime Technology Maven Repository", "http://repository.prime.com.tr");
-      
+
       // TODO: When forge has classifier support (<classifier>jdk15</classifier>)
       // dependency = DependencyBuilder.create();
       // dependency.setArtifactId("testng").setGroupId("org.testng").setVersion("5.1.0").setScopeType(ScopeType.TEST);
@@ -179,12 +179,12 @@ public class PrimefacesFacet extends BaseFacet
     * @param project
     * @param writer
     */
-//   private void installDependencyManagement(PrimefacesVersion version)
-//   {
-//      DependencyFacet deps = project.getFacet(DependencyFacet.class);
-//      for (Dependency dependency : PrimefacesVersion.PRIMEFACES_3_0_M1.getDependencyManagement())
-//      {
-//         deps.addManagedDependency(dependency);
-//      }
-//   }
+   // private void installDependencyManagement(PrimefacesVersion version)
+   // {
+   // DependencyFacet deps = project.getFacet(DependencyFacet.class);
+   // for (Dependency dependency : PrimefacesVersion.PRIMEFACES_3_0_M1.getDependencyManagement())
+   // {
+   // deps.addManagedDependency(dependency);
+   // }
+   // }
 }
