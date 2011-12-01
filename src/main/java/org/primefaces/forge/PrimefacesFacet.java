@@ -138,15 +138,12 @@ public class PrimefacesFacet extends BaseFacet {
         List<ServletDef> servlets = descriptor.getServlets();
         if (servlets != null && !servlets.isEmpty()) {
             for (ServletDef servlet : servlets) {
-                writer.println(ShellColor.MAGENTA, servlet.getName());
                 if (servlet.getName().equals("Faces Servlet")) {
                     writer.println(ShellColor.YELLOW, String.format(ALREADY_INSTALLED_MSG_FMT, "Faces Servlet",
                             "mapping"));
                     return true;
                 }
             }
-        } else {
-            writer.println("servlets list is empty");
         }
         return descriptor.exportAsString().contains(FacesServlet.class.getName());
     }

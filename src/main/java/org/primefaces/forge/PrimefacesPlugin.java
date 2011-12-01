@@ -40,6 +40,7 @@ import org.jboss.forge.spec.javaee.ServletFacet;
 import org.jboss.shrinkwrap.descriptor.impl.spec.servlet.web.WebAppDescriptorImpl;
 import org.jboss.shrinkwrap.descriptor.spi.node.Node;
 import org.primefaces.forge.data.PrimefacesThemes;
+import org.primefaces.forge.data.TextResources;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
@@ -77,9 +78,9 @@ public class PrimefacesPlugin implements Plugin {
     public void status(final PipeOut out) {
         PrimefacesFacet primefacesFacet = tryToGetFacet(PrimefacesFacet.class);
         if (primefacesFacet != null) {
-            out.println("Primeaces " + primefacesFacet.getVersion().getVersion() + " is installed.");
+            out.println("Primefaces " + primefacesFacet.getVersion().getVersion() + " is installed.");
         } else {
-            out.println("Primeaces is not installed. Use 'primefaces setup' to get started.");
+            out.println(TextResources.FACET_NOT_INSTALLED);
         }
     }
 
