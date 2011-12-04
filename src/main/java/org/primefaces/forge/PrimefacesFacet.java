@@ -159,13 +159,7 @@ public class PrimefacesFacet extends BaseFacet {
             deps.addDependency(dependency);
         }
 
-        deps.addRepository("Prime Technology Maven Repository", "http://repository.prime.com.tr");
-
-        // TODO: When forge has classifier support (<classifier>jdk15</classifier>)
-        // dependency = DependencyBuilder.create();
-        // dependency.setArtifactId("testng").setGroupId("org.testng").setVersion("5.1.0").setScopeType(ScopeType
-        // .TEST);
-        // installDependency(deps, dependency);
+        deps.addRepository("Prime Technology Maven Repository", "http://repository.primefaces.org");
 
     }
 
