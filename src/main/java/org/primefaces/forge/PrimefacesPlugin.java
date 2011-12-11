@@ -37,6 +37,7 @@ import org.jboss.forge.shell.ShellPrompt;
 import org.jboss.forge.shell.plugins.*;
 import org.jboss.forge.spec.javaee.CDIFacet;
 import org.jboss.forge.spec.javaee.ServletFacet;
+import org.jboss.shrinkwrap.descriptor.api.spec.servlet.web.WebAppDescriptor;
 import org.jboss.shrinkwrap.descriptor.impl.spec.servlet.web.WebAppDescriptorImpl;
 import org.jboss.shrinkwrap.descriptor.spi.node.Node;
 import org.primefaces.forge.data.PrimefacesThemes;
@@ -122,6 +123,7 @@ public class PrimefacesPlugin implements Plugin {
         assertInstalled();
         createFaceletFiles(pipeOut);
         createPrimeBean(pipeOut);
+        changeWelcomeFile();
     }
 
     @Command("set-theme")
@@ -250,5 +252,19 @@ public class PrimefacesPlugin implements Plugin {
         ((JavaResource) indexPage).setContents(primeBean);
 
         pipeOut.println(ShellColor.YELLOW, String.format(PrimefacesFacet.SUCCESS_MSG_FMT, "PrimeBean", "class"));
+    }
+
+
+    private void changeWelcomeFile() {
+        ServletFacet servlet = project.getFacet(ServletFacet.class);
+
+        WebAppDescriptor config = servlet.getConfig();
+        List<String> welcomeFiles = config.getWelcomeFiles();
+        if (!welcomeFiles.contains("/index.jsf")) {
+            welcomeFiles.add("/index.jsf");
+        }
+        config.welcomeFiles(welcomeFiles.toArray(new String[welcomeFiles.size()]));
+
+        servlet.saveConfig(config);
     }
 }
