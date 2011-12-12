@@ -174,10 +174,36 @@ public class PrimefacesPlugin implements Plugin {
         return version;
     }
 
-    @Command("list-themes")
+    @Command("list-theme")
     public void listThemes(final PipeOut pipeOut) {
         assertInstalled();
-        pipeOut.println(ShellColor.RED, "Not implemented yet");
+
+        String themeName = null;
+        DependencyFacet df = project.getFacet(DependencyFacet.class);
+        for (Dependency dependency : df.getDependencies()) {
+            if (PrimefacesThemes.PRIMEFACES_THEMES_GROUPID.equals(dependency.getGroupId())) {
+                themeName = dependency.getArtifactId();
+                break;
+            }
+        }
+        
+        // No theme dependency.  If not set none in web.xml we are using aristo by default.
+        if (themeName == null) {
+            ServletFacet servlet = project.getFacet(ServletFacet.class);
+            WebAppDescriptorImpl webxml = (WebAppDescriptorImpl) servlet.getConfig();
+
+            List<Node> nodes = webxml.getRootNode().get("context-param/param-name");
+            for (Node node : nodes) {
+                if (PRIMEFACES_THEME.equals(node.getText())) {
+                    themeName = node.getParent().getSingle("param-value").getText();
+                    break;
+                }
+            }
+            if (themeName == null) {
+                themeName = "aristo"; //Default
+            }
+        }
+        pipeOut.println(ShellColor.GREEN, "current Primefaces theme is "+themeName);
     }
 
     @Command("delete-theme")
@@ -187,7 +213,7 @@ public class PrimefacesPlugin implements Plugin {
     }
 
     /**
-     * Create a simple template file, and a Primeaces enabled index file that uses the template
+     * Create a simple template file, and a Primefaces enabled index file that uses the template
      *
      * @param pipeOut
      */
