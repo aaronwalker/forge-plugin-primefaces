@@ -50,6 +50,7 @@ import javax.inject.Named;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -137,18 +138,13 @@ public class PrimefacesPlugin implements Plugin {
             theme = prompt.promptChoiceTyped("Install which theme?", PrimefacesThemes.list);
         }
 
-        Dependency primefacesThemes = DependencyBuilder.create(PrimefacesThemes.PRIMEFACES_THEMES_GROUPID + ":" +
-                theme);
-        DependencyFacet df = project.getFacet(DependencyFacet.class);
-        List<Dependency> list = df.resolveAvailableVersions(primefacesThemes);
-
-        if (list.size() == 0) {
-            pipeOut.println(ShellColor.RED, "Theme not found in repository, just setting it in web.xml but be aware "
-                    + "of unpredicted behaviour");
-        } else {
-            Dependency dependency = prompt.promptChoiceTyped("Install which version?", list);
-            df.addDependency(dependency);
-            theme = dependency.getArtifactId();
+        if (!PrimefacesThemes.THEME_NONE.equals(theme)) {
+            PrimefacesFacet primefacesFacet = project.getFacet(PrimefacesFacet.class);
+            String version = getPrimefacesThemeVersion(primefacesFacet);
+            Dependency primefacesTheme = DependencyBuilder.create().setGroupId(PrimefacesThemes
+                    .PRIMEFACES_THEMES_GROUPID).setArtifactId(theme).setVersion(version);
+            DependencyFacet df = project.getFacet(DependencyFacet.class);
+            df.addDependency(primefacesTheme);
         }
 
         WebAppDescriptorImpl webxml = (WebAppDescriptorImpl) servlet.getConfig();
@@ -158,7 +154,7 @@ public class PrimefacesPlugin implements Plugin {
         boolean themeUpdated = false;
         for (Node node : nodes) {
             if (PRIMEFACES_THEME.equals(node.getText())) {
-                node.getParent().getOrCreate("param-value").text(theme);
+                node.getParent().getOrCreate("param-value").text(theme.toLowerCase(Locale.ENGLISH));
                 themeUpdated = true;
                 continue;
             }
@@ -168,6 +164,14 @@ public class PrimefacesPlugin implements Plugin {
         }
         servlet.saveConfig(webxml);
 
+    }
+
+    private String getPrimefacesThemeVersion(PrimefacesFacet somePrimefacesFacet) {
+        String version = "1.0.2"; // For the 3.0 versions
+        if (somePrimefacesFacet.getVersion().getVersion() == 2) {
+            version = "1.0.1";
+        }
+        return version;
     }
 
     @Command("list-themes")

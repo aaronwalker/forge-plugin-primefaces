@@ -22,11 +22,14 @@ import java.util.ArrayList;
 
 public class PrimefacesThemes {
 
+    public static String THEME_NONE = "NONE";
+
     public static ArrayList<String> list = new ArrayList<String>();
 
     public static final String PRIMEFACES_THEMES_GROUPID = "org.primefaces.themes";
 
     static {
+        list.add(THEME_NONE);
         list.add("aristo");
         list.add("black-tie");
         list.add("blitzer");
