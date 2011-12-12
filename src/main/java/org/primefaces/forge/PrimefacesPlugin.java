@@ -186,7 +186,7 @@ public class PrimefacesPlugin implements Plugin {
                 break;
             }
         }
-        
+
         // No theme dependency.  If not set none in web.xml we are using aristo by default.
         if (themeName == null) {
             ServletFacet servlet = project.getFacet(ServletFacet.class);
@@ -203,13 +203,34 @@ public class PrimefacesPlugin implements Plugin {
                 themeName = "aristo"; //Default
             }
         }
-        pipeOut.println(ShellColor.GREEN, "current Primefaces theme is "+themeName);
+        pipeOut.println(ShellColor.GREEN, "Current Primefaces theme is " + themeName);
     }
 
     @Command("delete-theme")
     public void deleteTheme(final PipeOut pipeOut) {
         assertInstalled();
-        pipeOut.println(ShellColor.RED, "Not implemented yet");
+
+        DependencyFacet df = project.getFacet(DependencyFacet.class);
+        for (Dependency dependency : df.getDependencies()) {
+            if (PrimefacesThemes.PRIMEFACES_THEMES_GROUPID.equals(dependency.getGroupId())) {
+                df.removeDependency(dependency);
+                break;
+            }
+        }
+
+        ServletFacet servlet = project.getFacet(ServletFacet.class);
+        WebAppDescriptorImpl webxml = (WebAppDescriptorImpl) servlet.getConfig();
+
+        List<Node> nodes = webxml.getRootNode().get("context-param/param-name");
+        for (Node node : nodes) {
+            if (PRIMEFACES_THEME.equals(node.getText())) {
+                webxml.getRootNode().removeChild(node.getParent());
+                break;
+            }
+        }
+        servlet.saveConfig(webxml);
+        pipeOut.println(ShellColor.GREEN, "Primefaces theme is reset to aristo (default theme)");
+
     }
 
     /**
