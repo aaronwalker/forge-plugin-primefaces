@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.prime.com.tr/ui">
+    xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="${primefacesTargetName}">
 
 <body>
 <ui:composition template="/templates/template.xhtml">
@@ -11,7 +11,7 @@
         <h:form prependId="false">
             <h:outputLabel value="Name:" for="nameInput" />
             <h:inputText id="nameInput" value="#{primeBean.name}">
-                <p:ajax event="keyup" render="output" />
+                <p:ajax event="keyup" update="output" />
             </h:inputText>
             <h:panelGroup id="output">
                 <h:outputText value="Hello #{primeBean.name}!"

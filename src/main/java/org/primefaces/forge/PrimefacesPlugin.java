@@ -18,8 +18,6 @@
  */
 package org.primefaces.forge;
 
-import org.jboss.forge.parser.java.Annotation;
-import org.jboss.forge.parser.java.JavaSource;
 import org.jboss.forge.project.Facet;
 import org.jboss.forge.project.Project;
 import org.jboss.forge.project.dependencies.Dependency;
@@ -30,7 +28,6 @@ import org.jboss.forge.project.facets.WebResourceFacet;
 import org.jboss.forge.project.facets.events.InstallFacets;
 import org.jboss.forge.resources.DirectoryResource;
 import org.jboss.forge.resources.FileResource;
-import org.jboss.forge.resources.java.JavaResource;
 import org.jboss.forge.shell.ShellColor;
 import org.jboss.forge.shell.ShellMessages;
 import org.jboss.forge.shell.ShellPrompt;
@@ -42,13 +39,10 @@ import org.jboss.shrinkwrap.descriptor.impl.spec.servlet.web.WebAppDescriptorImp
 import org.jboss.shrinkwrap.descriptor.spi.node.Node;
 import org.primefaces.forge.data.PrimefacesThemes;
 import org.primefaces.forge.data.TextResources;
+import org.primefaces.forge.template.TemplateEvaluator;
 
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
@@ -122,13 +116,47 @@ public class PrimefacesPlugin implements Plugin {
     @Command("install-example-facelet")
     public void installExampleFacelets(final PipeOut pipeOut) {
         assertInstalled();
-        createFaceletFiles(pipeOut);
-        createPrimeBean(pipeOut);
+        TemplateEvaluator evaluator = TemplateEvaluator.getInstance();
+        addTemplateVariables(evaluator);
+        createFaceletFiles(evaluator, pipeOut);
+        createPrimeBean(evaluator, pipeOut);
         changeWelcomeFile();
     }
 
+    private void addTemplateVariables(TemplateEvaluator someEvaluator) {
+        PrimefacesFacet primeFacet = project.getFacet(PrimefacesFacet.class);
+
+        if (primeFacet.getVersion().getVersion() == 2) {
+            someEvaluator.addParameters("primefacesTargetName", "http://primefaces.prime.com.tr/ui");
+        } else {
+            someEvaluator.addParameters("primefacesTargetName", "http://primefaces.org/ui");
+        }
+
+        
+        
+        boolean hasCDI = project.hasFacet(CDIFacet.class);
+        JavaSourceFacet source = project.getFacet(JavaSourceFacet.class);
+
+        someEvaluator.addParameters("basePackage", source.getBasePackage());
+
+        if (hasCDI) {
+            someEvaluator.addParameters("managedBeanFullClassName", "javax.inject.Named");
+            someEvaluator.addParameters("scopeClassName", "javax.enterprise.context.SessionScoped" );
+            someEvaluator.addParameters("scopeAnnotation", "@SessionScoped");
+            someEvaluator.addParameters("managedBeanAnnotation", "@Named");
+
+        } else {
+            someEvaluator.addParameters("managedBeanFullClassName", "javax.faces.bean.ManagedBean" );
+            someEvaluator.addParameters("scopeClassName", "javax.faces.bean.ViewScoped");
+            someEvaluator.addParameters("scopeAnnotation", "@ViewScoped");
+            someEvaluator.addParameters("managedBeanAnnotation", "@ManagedBean(name=\"primeBean\")");
+
+        }
+
+    }
+
     @Command("set-theme")
-    public void setTheme(@Option(description = "Sets the theme for primefaces", required = false) String theme,
+    public void setTheme(@Option(description = "Sets the theme for primefaces", required = false) String theme, 
                          final PipeOut pipeOut) {
         assertInstalled();
 
@@ -236,30 +264,19 @@ public class PrimefacesPlugin implements Plugin {
     /**
      * Create a simple template file, and a Primefaces enabled index file that uses the template
      *
+     * @param someEvaluator
      * @param pipeOut
      */
-    private void createFaceletFiles(final PipeOut pipeOut) {
-        PrimefacesFacet primeFacet = project.getFacet(PrimefacesFacet.class);
-
+    private void createFaceletFiles(final TemplateEvaluator someEvaluator, final PipeOut pipeOut) {
         DirectoryResource webRoot = project.getFacet(WebResourceFacet.class).getWebRootDirectory();
         DirectoryResource templateDirectory = webRoot.getOrCreateChildDirectory("templates");
         FileResource<?> templatePage = (FileResource<?>) templateDirectory.getChild("template.xhtml");
-        InputStream stream;
-        if (primeFacet.getVersion().getVersion() == 2) {
-            stream = PrimefacesPlugin.class.getResourceAsStream("/org/primefaces/forge/template.xhtml");
-        } else {
-            stream = PrimefacesPlugin.class.getResourceAsStream("/org/primefaces/forge/template_3.xhtml");
-        }
-        templatePage.setContents(stream);
+
+        templatePage.setContents(someEvaluator.evaluate("/org/primefaces/forge/template.vm"));
         pipeOut.println(ShellColor.YELLOW, String.format(PrimefacesFacet.SUCCESS_MSG_FMT, "template.xhtml", "file"));
 
         FileResource<?> indexPage = (FileResource<?>) webRoot.getChild("index.xhtml");
-        if (primeFacet.getVersion().getVersion() == 2) {
-            stream = PrimefacesPlugin.class.getResourceAsStream("/org/primefaces/forge/index.xhtml");
-        } else {
-            stream = PrimefacesPlugin.class.getResourceAsStream("/org/primefaces/forge/index_3.xhtml");
-        }
-        indexPage.setContents(stream);
+        indexPage.setContents(someEvaluator.evaluate("/org/primefaces/forge/index.vm"));
         pipeOut.println(ShellColor.YELLOW, String.format(PrimefacesFacet.SUCCESS_MSG_FMT, "index.xhtml", "file"));
 
         FileResource<?> forgeIndexPage = (FileResource<?>) webRoot.getChild("index.html");
@@ -267,41 +284,19 @@ public class PrimefacesPlugin implements Plugin {
     }
 
     /**
-     * Create a simple JSF managed bean to back the Primeaces input in the example facelet file
+     * Create a simple JSF managed bean to back the Primefaces input in the example facelet file
      *
+     * @param someEvaluator
      * @param pipeOut
      */
-    private void createPrimeBean(final PipeOut pipeOut) {
-
-        boolean hasCDI = project.hasFacet(CDIFacet.class);
+    private void createPrimeBean(TemplateEvaluator someEvaluator, final PipeOut pipeOut) {
         JavaSourceFacet source = project.getFacet(JavaSourceFacet.class);
         DirectoryResource sourceRoot = source.getBasePackageResource();
         FileResource<?> indexPage = (FileResource<?>) sourceRoot.getChild("PrimeBean.java");
 
-        InputStream stream = PrimefacesPlugin.class.getResourceAsStream("/org/primefaces/forge/PrimeBean.java.txt");
 
-        indexPage.setContents(stream);
-        JavaSource primeBean = null;
-        try {
 
-            primeBean = ((JavaResource) indexPage).getJavaSource();
-            primeBean.setPackage(source.getBasePackage());
-            if (hasCDI) {
-                for (Object obj : primeBean.getAnnotations()) {
-                    primeBean.removeAnnotation((Annotation) obj);
-                    primeBean.removeImport(obj.getClass());
-                }
-                primeBean.addAnnotation(Named.class);
-                primeBean.addAnnotation(SessionScoped.class);
-                primeBean.addImport(Named.class);
-                primeBean.addImport(SessionScoped.class);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        ((JavaResource) indexPage).setContents(primeBean);
-
+        indexPage.setContents(someEvaluator.evaluate("/org/primefaces/forge/PrimeBean.vm"));
         pipeOut.println(ShellColor.YELLOW, String.format(PrimefacesFacet.SUCCESS_MSG_FMT, "PrimeBean", "class"));
     }
 

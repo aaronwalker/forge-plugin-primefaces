@@ -10,6 +10,13 @@
         <forge.api.version>1.0.0.Beta3</forge.api.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+
         <dependency>
             <groupId>org.jboss.forge</groupId>
             <artifactId>forge-javaee-api</artifactId>
