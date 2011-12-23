@@ -172,7 +172,7 @@ public class PrimefacesPlugin implements Plugin {
             Dependency primefacesTheme = DependencyBuilder.create().setGroupId(PrimefacesThemes
                     .PRIMEFACES_THEMES_GROUPID).setArtifactId(theme).setVersion(version);
             DependencyFacet df = project.getFacet(DependencyFacet.class);
-            df.addDependency(primefacesTheme);
+            df.addDirectDependency(primefacesTheme);
         }
 
         WebAppDescriptorImpl webxml = (WebAppDescriptorImpl) servlet.getConfig();

@@ -156,7 +156,7 @@ public class PrimefacesFacet extends BaseFacet {
 
         DependencyFacet deps = project.getFacet(DependencyFacet.class);
         for (Dependency dependency : version.getDependencies()) {
-            deps.addDependency(dependency);
+            deps.addDirectDependency(dependency);
         }
 
         deps.addRepository("Prime Technology Maven Repository", "http://repository.primefaces.org");
