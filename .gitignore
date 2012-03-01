@@ -5,3 +5,5 @@ target
 *.sw?
 */src/main/java/META-INF
 .faces-config.xml.jsfdia
+.idea/
+*.iml

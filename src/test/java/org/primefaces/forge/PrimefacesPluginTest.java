@@ -19,7 +19,7 @@
 package org.primefaces.forge;
 
 import junit.framework.Assert;
-import org.jboss.arquillian.api.Deployment;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.forge.project.Project;
 import org.jboss.forge.project.packaging.PackagingType;
 import org.jboss.forge.test.AbstractShellTest;
